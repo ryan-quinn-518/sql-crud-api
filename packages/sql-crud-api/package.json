@@ -1,0 +1,18 @@
+{
+  "name": "@pronghorn-software/sql-crud-api",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint src/",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@pronghorn-software/eslint-config": "workspace:*",
+    "@pronghorn-software/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3"
+  }
+}

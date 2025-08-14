@@ -1,0 +1,19 @@
+services:
+  pg:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ryan
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: sql_crud_api
+    volumes:
+      - pgdata:/home/rmq/.db/pg
+ 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+ 
+volumes:
+  pgdata:
