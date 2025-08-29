@@ -2,7 +2,7 @@
 // 3PP Imports
 ///////////////////////////////////////////////////////////////////////////////
 import { addCleanupListener } from "async-cleanup";
-import { Pool, type PoolClient } from "pg";
+import { createPool, type Pool, type PoolConnection } from "mariadb";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Local Imports
@@ -13,17 +13,17 @@ import type { Nullable } from "@pronghorn-software/sql-crud-api/types";
 ///////////////////////////////////////////////////////////////////////////////
 // Exports
 ///////////////////////////////////////////////////////////////////////////////
-export class PgCrudApi implements SqlCrudApi {
+export class MariaDbCrudApi implements SqlCrudApi {
     private pool: Pool;
 
     private constructor(
         database: string,
-        user = "postgres",
-        password = "postgres",
-        port = 5432,
+        user: string,
+        password: string,
+        port = 3306,
         host = "localhost",
     ) {
-        this.pool = new Pool({
+        this.pool = createPool({
             database,
             user,
             password,
@@ -38,32 +38,18 @@ export class PgCrudApi implements SqlCrudApi {
 
     async getInstance<T>(query: string, values: any[]) {
         const result = await this._queryCommon( query, values );
-        return result.rowCount ? result.rows[0] as T : null;
+        const tmp = (await this.pool.getConnection()).query()
+        return result.length ? result[0] as T : null;
     }
 
     async getCollection<T>(query: string, values: any[]) {
         const result = await this._queryCommon( query, values );
-        return result.rows as T[];
+        return result as T[];
     }
 
     async insertSerial(query: string, values: any[]) {
-        let conn: Nullable<PoolClient> = null;
-
-        try {
-            conn = await this.pool.connect();
-            await conn.query(query, values);
-            
-            const lastval_result = await conn.query("SELECT lastval() AS insert_id;")
-            conn.release();
-            
-            if( !lastval_result.rowCount ) {
-                throw new Error("Unable to recover insert_id");
-            } else {
-                return lastval_result.rows[0].insert_id;
-            }
-        } finally {
-            conn?.release();
-        }
+        const result = await this._queryCommon( query, values );
+        return Number(result.insertId);
     }
 
     async insertKeyed(query: string, values: any[]) {
@@ -72,18 +58,18 @@ export class PgCrudApi implements SqlCrudApi {
 
     async update(query: string, values: any[]) {
         const result = await this._queryCommon( query, values );
-        return result.rowCount || 0;
+        return result.affectedRows;
     }
 
     async _queryCommon(query: string, values: any[]) {
-        let conn: Nullable<PoolClient> = null;
+        let conn: Nullable<PoolConnection> = null;
 
         try {
-            conn = await this.pool.connect();
+            conn = await this.pool.getConnection();
             const result = await conn.query(query, values);
             return result;
         } finally {
-            conn?.release();
+            await conn?.release();
         }
     }
 }

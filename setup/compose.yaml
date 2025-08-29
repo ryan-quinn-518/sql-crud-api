@@ -8,6 +8,16 @@ services:
       POSTGRES_DB: sql_crud_api
     volumes:
       - pgdata:/home/rmq/.db/pg
+
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_USER: ryan
+      MARIADB_PASSWORD: supersecret
+      MARIADB_DB: sql_crud_api
+    volumes:
+      - mdbdata:/home/rmq/.db/mdb
  
   adminer:
     image: adminer
@@ -17,3 +27,4 @@ services:
  
 volumes:
   pgdata:
+  mdbdata:

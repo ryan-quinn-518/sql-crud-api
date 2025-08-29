@@ -1,10 +1,10 @@
 {
-  "name": "@pronghorn-software/sql-crud-api",
+  "name": "@pronghorn-software/sqlite-crud-api",
   "version": "0.1.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": "./src/*.ts",
+    "./types": "./src/types.ts"
   },
   "scripts": {
     "lint": "eslint src/",
@@ -13,7 +13,13 @@
   "devDependencies": {
     "@pronghorn-software/eslint-config": "workspace:*",
     "@pronghorn-software/typescript-config": "workspace:*",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.15.3"
+  },
+  "dependencies": {
+    "@pronghorn-software/sql-crud-api": "workspace:*",
+    "async-cleanup": "^1.0.0",
+    "better-sqlite3": "^12.2.0"
   },
   "license": "MIT"
 }

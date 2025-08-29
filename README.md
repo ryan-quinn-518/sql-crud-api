@@ -1,7 +1,6 @@
 TODO
 
-- license
-- README
+- README(s)
 - CHANGELOG
-- MariaDB
-- SQLite
+- tests
+- setup/config - MariaDB
